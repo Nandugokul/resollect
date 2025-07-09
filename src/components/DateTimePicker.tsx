@@ -98,7 +98,7 @@ export function DateTimePicker({
           {date ? (
             format(date, "MM/dd/yyyy hh:mm aa")
           ) : (
-            <span>MM/DD/YYYY - HH:MM</span>
+            <span>Select date and time</span>
           )}
         </Button>
       </PopoverTrigger>
