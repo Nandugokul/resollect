@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   Card,
   CardContent,
@@ -8,40 +9,72 @@ import {
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-import * as React from "react";
 import { DateTimePicker } from "./DateTimePicker";
+import supabase from "@/utils/supabaseClient";
+import { toast } from "react-hot-toast";
 
 function AddEditTaskForm() {
-  const [taskName, setTaskName] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [deadline, setDeadline] = React.useState<Date | undefined>(undefined);
+  const [form, setForm] = React.useState({
+    title: "",
+    description: "",
+    deadline: undefined as Date | undefined,
+  });
   const [submitted, setSubmitted] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
-  const taskNameError = submitted && !taskName ? "Task name is required" : "";
-  const deadlineError = submitted && !deadline ? "Deadline is required" : "";
-  const isFormValid = !!taskName && !!deadline;
+  const titleError = submitted && !form.title ? "Task name is required" : "";
+  const deadlineError =
+    submitted && !form.deadline ? "Deadline is required" : "";
+  const isFormValid = !!form.title && !!form.deadline;
 
-  function handleAddTask(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitted(true);
-    if (!isFormValid) return;
-    const data = {
-      taskName,
-      description,
-      deadline: deadline ? deadline.toISOString() : undefined,
-    };
-    console.log(data);
-  }
+  const handleInputChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setForm((prev) => ({ ...prev, title: e.target.value }));
+      if (submitted) setSubmitted(false);
+    },
+    [submitted]
+  );
 
-  function handleTaskNameChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setTaskName(e.target.value);
-    if (submitted) setSubmitted(false);
-  }
+  const handleDescriptionChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setForm((prev) => ({ ...prev, description: e.target.value }));
+    },
+    []
+  );
 
-  function handleDeadlineChange(d: Date | undefined) {
-    setDeadline(d);
-    if (submitted) setSubmitted(false);
-  }
+  const handleDeadlineChange = React.useCallback(
+    (d: Date | undefined) => {
+      setForm((prev) => ({ ...prev, deadline: d }));
+      if (submitted) setSubmitted(false);
+    },
+    [submitted]
+  );
+
+  const handleAddTask = React.useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setSubmitted(true);
+      if (!isFormValid) return;
+      setLoading(true);
+      const payload = {
+        title: form.title,
+        description: form.description,
+        deadline: form.deadline ? form.deadline.toISOString() : undefined,
+      };
+      const { error } = await supabase
+        .from("todoList")
+        .insert({ ...payload, isCompleted: false });
+      setLoading(false);
+      if (error) {
+        toast.error("Failed to add task. Please try again.");
+        return;
+      }
+      toast.success("Task added successfully!");
+      setForm({ title: "", description: "", deadline: undefined });
+      setSubmitted(false);
+    },
+    [form, isFormValid]
+  );
 
   return (
     <Card className="w-1/4">
@@ -54,12 +87,13 @@ function AddEditTaskForm() {
             <label className="block mb-1 text-sm font-medium">Task Name</label>
             <Input
               placeholder="Enter task name..."
-              value={taskName}
-              onChange={handleTaskNameChange}
-              aria-invalid={!!taskNameError}
+              value={form.title}
+              onChange={handleInputChange}
+              aria-invalid={!!titleError}
+              disabled={loading}
             />
-            {taskNameError && (
-              <span className="text-red-500 text-xs mt-1">{taskNameError}</span>
+            {titleError && (
+              <span className="text-red-500 text-xs mt-1">{titleError}</span>
             )}
           </div>
           <div>
@@ -68,20 +102,26 @@ function AddEditTaskForm() {
             </label>
             <Textarea
               placeholder="Enter description..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={form.description}
+              onChange={handleDescriptionChange}
+              disabled={loading}
             />
           </div>
           <div>
             <label className="block mb-1 text-sm font-medium">Deadline</label>
-            <DateTimePicker value={deadline} onChange={handleDeadlineChange} />
+            <DateTimePicker
+              value={form.deadline}
+              onChange={handleDeadlineChange}
+            />
             {deadlineError && (
               <span className="text-red-500 text-xs mt-1">{deadlineError}</span>
             )}
           </div>
         </CardContent>
         <CardFooter>
-          <Button type="submit">Add Task</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? "Adding..." : "Add Task"}
+          </Button>
         </CardFooter>
       </form>
     </Card>
