@@ -103,17 +103,19 @@ function TaskDisplayGrid({ tasks, loading = false }: TaskDisplayGridProps) {
           </div>
         ) : (
           <Tabs defaultValue="ongoing" className="w-full">
-            <TabsList className="w-full mb-4 py-6 sticky top-0 z-10 bg-background">
-              <TabsTrigger value="ongoing" className="flex-1 py-5">
-                Ongoing
-              </TabsTrigger>
-              <TabsTrigger value="success" className="flex-1 py-5">
-                Success
-              </TabsTrigger>
-              <TabsTrigger value="failure" className="flex-1 py-5">
-                Failure
-              </TabsTrigger>
-            </TabsList>
+            <div className="p-3 sticky top-0 z-10 bg-gray-100 rounded-sm ">
+              <TabsList className="w-full py-6  bg-gray-100">
+                <TabsTrigger value="ongoing" className="flex-1 py-5 ">
+                  Ongoing
+                </TabsTrigger>
+                <TabsTrigger value="success" className="flex-1 py-5 ">
+                  Success
+                </TabsTrigger>
+                <TabsTrigger value="failure" className="flex-1 py-5 ">
+                  Failure
+                </TabsTrigger>
+              </TabsList>
+            </div>
             <TabsContent value="ongoing">
               <div className="flex flex-col gap-4">
                 {loading
