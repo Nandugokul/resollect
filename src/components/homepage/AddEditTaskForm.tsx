@@ -157,15 +157,21 @@ function AddEditTaskForm({
   }, []);
 
   const handleDelete = async () => {
+    if (!data?.id) return;
+    // Optimistically remove the task from Redux
+    const prevTask = { ...data };
+    dispatch(removeTask(data.id));
+    setOpen?.(false);
     const { error } = await supabase
       .from("todoList")
       .delete()
       .eq("id", data?.id);
     if (error) {
+      // Revert optimistic delete
+      dispatch(addTask(prevTask));
       toast.error("Failed to remove task : " + error.message);
     } else {
       toast.success("Task deleted successfully!");
-      setOpen?.(false);
     }
   };
 

@@ -12,6 +12,8 @@ import type { Task } from "@/types/task";
 import { getDueParts } from "../../lib/utils";
 import supabase from "@/lib/helper/supabaseClient";
 import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { updateTask } from "@/store/todoSlice";
 
 function TaskCardContent({
   onCardClick,
@@ -67,16 +69,22 @@ function TaskCardContent({
 function SingleTaskComponent({ data }: { data: Task }) {
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openSheet, setOpenSheet] = React.useState(false);
+  const dispatch = useDispatch();
 
   const handleDialogCardClick = () => setOpenDialog(true);
   const handleSheetCardClick = () => setOpenSheet(true);
   const handleMarkDone = async (e: React.MouseEvent, task: Task) => {
     e.stopPropagation();
+    // Optimistically update Redux state
+    const prevTask = { ...task };
+    dispatch(updateTask({ id: task.id, task: { isCompleted: true } }));
     const { error } = await supabase
       .from("todoList")
       .update({ isCompleted: true })
       .eq("id", task.id);
     if (error) {
+      // Revert optimistic update
+      dispatch(updateTask({ id: task.id, task: prevTask }));
       toast.error("Failed to mark as done: " + error.message);
     } else {
       toast.success("Task marked as done successfully!");
