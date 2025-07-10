@@ -1,10 +1,12 @@
-import AddEditTaskForm from "./components/AddEditTaskForm";
+// import AddEditTaskForm from "./components/AddEditTaskForm";
 import { Toaster } from "react-hot-toast";
+import Todo from "./components/Todo";
 
 function App() {
   return (
     <div>
-      <AddEditTaskForm />
+      <Todo />
+      {/* <AddEditTaskForm /> */}
       <Toaster />
     </div>
   );

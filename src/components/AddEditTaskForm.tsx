@@ -13,7 +13,7 @@ import { DateTimePicker } from "./DateTimePicker";
 import supabase from "@/utils/supabaseClient";
 import { toast } from "react-hot-toast";
 
-function AddEditTaskForm() {
+function AddEditTaskForm({ mode = "add" }: { mode?: "add" | "edit" }) {
   const [form, setForm] = React.useState({
     title: "",
     description: "",
@@ -56,14 +56,17 @@ function AddEditTaskForm() {
       setSubmitted(true);
       if (!isFormValid) return;
       setLoading(true);
+      const now = new Date().toISOString();
       const payload = {
         title: form.title,
         description: form.description,
         deadline: form.deadline ? form.deadline.toISOString() : undefined,
+        ...(mode === "add" ? { createdAt: now } : { updatedAt: now }),
       };
       const { error } = await supabase
         .from("todoList")
-        .insert({ ...payload, isCompleted: false });
+        .insert({ ...payload, isCompleted: false })
+        .single();
       setLoading(false);
       if (error) {
         toast.error("Failed to add task. Please try again.");
@@ -73,11 +76,11 @@ function AddEditTaskForm() {
       setForm({ title: "", description: "", deadline: undefined });
       setSubmitted(false);
     },
-    [form, isFormValid]
+    [form, isFormValid, mode]
   );
 
   return (
-    <Card className="w-1/4">
+    <Card>
       <CardHeader>
         <CardTitle>Create Task</CardTitle>
       </CardHeader>

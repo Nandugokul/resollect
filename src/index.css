@@ -119,3 +119,8 @@
     font-family: "Inter", sans-serif;
   }
 }
+
+button,
+a {
+  cursor: pointer;
+}
