@@ -12,8 +12,17 @@ import { Textarea } from "./ui/textarea";
 import { DateTimePicker } from "./DateTimePicker";
 import supabase from "@/utils/supabaseClient";
 import { toast } from "react-hot-toast";
+import { DialogClose } from "./ui/dialog";
+import { Trash } from "lucide-react";
+import type { Task } from "@/types/task";
 
-function AddEditTaskForm({ mode = "add" }: { mode?: "add" | "edit" }) {
+function AddEditTaskForm({
+  data,
+  setOpen,
+}: {
+  data?: Task;
+  setOpen?: (open: boolean) => void;
+}) {
   const [form, setForm] = React.useState({
     title: "",
     description: "",
@@ -21,6 +30,16 @@ function AddEditTaskForm({ mode = "add" }: { mode?: "add" | "edit" }) {
   });
   const [submitted, setSubmitted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (data && data.id) {
+      setForm({
+        title: data.title || "",
+        description: data.description || "",
+        deadline: data.deadline ? new Date(data.deadline) : undefined,
+      });
+    }
+  }, [data]);
 
   const titleError = submitted && !form.title ? "Task name is required" : "";
   const deadlineError =
@@ -61,28 +80,81 @@ function AddEditTaskForm({ mode = "add" }: { mode?: "add" | "edit" }) {
         title: form.title,
         description: form.description,
         deadline: form.deadline ? form.deadline.toISOString() : undefined,
-        ...(mode === "add" ? { createdAt: now } : { updatedAt: now }),
+        ...(data?.id ? { updatedAt: now } : { createdAt: now }),
       };
-      const { error } = await supabase
-        .from("todoList")
-        .insert({ ...payload, isCompleted: false })
-        .single();
+      let error: string | null = null;
+      if (data?.id) {
+        // Update existing task, do not include isCompleted
+        const res = await supabase
+          .from("todoList")
+          .update(payload)
+          .eq("id", data.id)
+          .single();
+        error = res.error ? res.error.message : null;
+      } else {
+        // Insert new task, include isCompleted: false
+        const res = await supabase
+          .from("todoList")
+          .insert({ ...payload, isCompleted: false })
+          .single();
+        error = res.error ? res.error.message : null;
+      }
       setLoading(false);
       if (error) {
-        toast.error("Failed to add task. Please try again.");
+        toast.error(
+          data?.id
+            ? "Failed to update task. Please try again."
+            : "Failed to add task. Please try again."
+        );
         return;
       }
-      toast.success("Task added successfully!");
+      toast.success(
+        data?.id ? "Task updated successfully!" : "Task added successfully!"
+      );
       setForm({ title: "", description: "", deadline: undefined });
       setSubmitted(false);
+      setOpen?.(false);
     },
-    [form, isFormValid, mode]
+    [form, isFormValid, setOpen, data]
   );
 
+  const handleDiscard = React.useCallback(() => {
+    setForm({ title: "", description: "", deadline: undefined });
+    setSubmitted(false);
+  }, []);
+
+  const handleDelete = async () => {
+    const { error } = await supabase
+      .from("todoList")
+      .delete()
+      .eq("id", data?.id);
+    if (error) {
+      toast.error("Failed to remove task : " + error.message);
+    } else {
+      toast.success("Task deleted successfully!");
+      setOpen?.(false);
+    }
+  };
+
   return (
-    <Card>
+    <Card className="border-0 shadow-none">
       <CardHeader>
-        <CardTitle>Create Task</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>{data?.id ? "Update Task" : "Create Task"}</CardTitle>
+          {data?.id && (
+            <Button
+              onClick={handleDelete}
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="ml-2"
+              disabled={loading}
+              aria-label="Delete"
+            >
+              <Trash className="w-5 h-5" />
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <form onSubmit={handleAddTask}>
         <CardContent className="flex flex-col gap-4">
@@ -121,10 +193,29 @@ function AddEditTaskForm({ mode = "add" }: { mode?: "add" | "edit" }) {
             )}
           </div>
         </CardContent>
-        <CardFooter>
-          <Button type="submit" disabled={loading}>
-            {loading ? "Adding..." : "Add Task"}
-          </Button>
+        <CardFooter className="flex items-center justify-between gap-4 mt-5">
+          <DialogClose asChild>
+            <Button
+              className="flex-1"
+              variant={"secondary"}
+              type="button"
+              onClick={handleDiscard}
+              disabled={loading}
+            >
+              Discard
+            </Button>
+          </DialogClose>
+          <DialogClose asChild>
+            <Button className="flex-1" type="submit" disabled={loading}>
+              {loading
+                ? data?.id
+                  ? "Updating..."
+                  : "Adding..."
+                : data?.id
+                ? "Update Task"
+                : "Add Task"}
+            </Button>
+          </DialogClose>
         </CardFooter>
       </form>
     </Card>

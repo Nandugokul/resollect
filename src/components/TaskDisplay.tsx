@@ -60,7 +60,7 @@ function TaskDisplay() {
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
-                  <AddEditTaskForm mode="add" />
+                  <AddEditTaskForm />
                 </DialogContent>
               </Dialog>
             </div>
@@ -75,7 +75,7 @@ function TaskDisplay() {
           </Button>
         </SheetTrigger>
         <SheetContent side="bottom">
-          <AddEditTaskForm mode="add" />
+          <AddEditTaskForm />
         </SheetContent>
       </Sheet>
       <TaskDisplayGrid tasks={tasks} />

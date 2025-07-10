@@ -24,6 +24,11 @@ export function DateTimePicker({
   const [date, setDate] = React.useState<Date | undefined>(value);
   const [isOpen, setIsOpen] = React.useState(false);
 
+  // Sync internal date state with value prop
+  React.useEffect(() => {
+    setDate(value);
+  }, [value]);
+
   // Track if all parts are set
   const [hasSelectedDate, setHasSelectedDate] = React.useState(false);
   const [hasSelectedHour, setHasSelectedHour] = React.useState(false);

@@ -7,14 +7,29 @@ interface TaskDisplayGridProps {
 }
 
 function TaskDisplayGrid({ tasks }: TaskDisplayGridProps) {
-  console.log(tasks);
+  const ongoing: Task[] = [];
+  const success: Task[] = [];
+  const failure: Task[] = [];
+
+  const now = new Date();
+
+  tasks.forEach((task) => {
+    if (task.isCompleted) {
+      success.push(task);
+    } else if (now < new Date(task.deadline)) {
+      ongoing.push(task);
+    } else {
+      failure.push(task);
+    }
+  });
+
   return (
     <>
       <div className="hidden md:grid grid-cols-3 gap-6 w-full">
         <div>
           <h2 className="text-xl font-bold mb-4 ">Ongoing</h2>
           <div className="flex flex-col gap-4">
-            {tasks.map((task, idx) => (
+            {ongoing.map((task, idx) => (
               <SingleTaskComponent key={task.id || idx} data={task} />
             ))}
           </div>
@@ -22,13 +37,17 @@ function TaskDisplayGrid({ tasks }: TaskDisplayGridProps) {
         <div>
           <h2 className="text-xl font-bold mb-4 ">Success</h2>
           <div className="flex flex-col gap-4">
-            {/* You can filter and render tasks with status 'success' here */}
+            {success.map((task, idx) => (
+              <SingleTaskComponent key={task.id || idx} data={task} />
+            ))}
           </div>
         </div>
         <div>
           <h2 className="text-xl font-bold mb-4 ">Failure</h2>
           <div className="flex flex-col gap-4">
-            {/* You can filter and render tasks with status 'failure' here */}
+            {failure.map((task, idx) => (
+              <SingleTaskComponent key={task.id || idx} data={task} />
+            ))}
           </div>
         </div>
       </div>
@@ -47,19 +66,23 @@ function TaskDisplayGrid({ tasks }: TaskDisplayGridProps) {
           </TabsList>
           <TabsContent value="ongoing">
             <div className="flex flex-col gap-4">
-              {tasks.map((task, idx) => (
+              {ongoing.map((task, idx) => (
                 <SingleTaskComponent key={task.id || idx} data={task} />
               ))}
             </div>
           </TabsContent>
           <TabsContent value="success">
             <div className="flex flex-col gap-4">
-              {/* You can filter and render tasks with status 'success' here */}
+              {success.map((task, idx) => (
+                <SingleTaskComponent key={task.id || idx} data={task} />
+              ))}
             </div>
           </TabsContent>
           <TabsContent value="failure">
             <div className="flex flex-col gap-4">
-              {/* You can filter and render tasks with status 'failure' here */}
+              {failure.map((task, idx) => (
+                <SingleTaskComponent key={task.id || idx} data={task} />
+              ))}
             </div>
           </TabsContent>
         </Tabs>
