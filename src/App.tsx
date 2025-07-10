@@ -5,7 +5,7 @@ function App() {
   return (
     <div>
       <Todo />
-      <Toaster />
+      <Toaster position="bottom-center" />
     </div>
   );
 }

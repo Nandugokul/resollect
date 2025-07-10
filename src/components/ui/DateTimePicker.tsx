@@ -17,9 +17,13 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 export function DateTimePicker({
   value,
   onChange,
+  disablePast = false,
+  disabled = false,
 }: {
   value?: Date;
   onChange?: (date: Date | undefined) => void;
+  disablePast?: boolean;
+  disabled?: boolean;
 }) {
   const [date, setDate] = React.useState<Date | undefined>(value);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -98,6 +102,7 @@ export function DateTimePicker({
             "w-full justify-start text-left font-normal",
             !date && "text-muted-foreground"
           )}
+          disabled={disabled}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {date ? (
@@ -114,6 +119,14 @@ export function DateTimePicker({
             selected={date}
             onSelect={handleDateSelect}
             initialFocus
+            {...(disablePast
+              ? {
+                  disabled: {
+                    before: new Date(new Date().setHours(0, 0, 0, 0)),
+                  },
+                }
+              : {})}
+            disabled={disabled}
           />
           <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
             <ScrollArea className="w-64 sm:w-auto">
@@ -132,6 +145,7 @@ export function DateTimePicker({
                       }
                       className="sm:w-full shrink-0 aspect-square"
                       onClick={() => handleTimeChange("hour", hour.toString())}
+                      disabled={disabled}
                     >
                       {hour}
                     </Button>
@@ -152,6 +166,7 @@ export function DateTimePicker({
                     onClick={() =>
                       handleTimeChange("minute", minute.toString())
                     }
+                    disabled={disabled}
                   >
                     {minute}
                   </Button>
@@ -174,6 +189,7 @@ export function DateTimePicker({
                     }
                     className="sm:w-full shrink-0 aspect-square"
                     onClick={() => handleTimeChange("ampm", ampm)}
+                    disabled={disabled}
                   >
                     {ampm}
                   </Button>

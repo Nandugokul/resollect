@@ -18,6 +18,7 @@ import type { Task } from "@/types/task";
 import { useDispatch } from "react-redux";
 import { addTask, updateTask } from "@/store/todoSlice";
 import { removeTask } from "@/store/todoSlice";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 function AddEditTaskForm({
   data,
@@ -34,6 +35,9 @@ function AddEditTaskForm({
   const [submitted, setSubmitted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const dispatch = useDispatch();
+
+  // Add isCompleted variable
+  const isCompleted = !!data?.isCompleted;
 
   React.useEffect(() => {
     if (data && data.id) {
@@ -179,7 +183,14 @@ function AddEditTaskForm({
     <Card className="border-0 shadow-none">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>{data?.id ? "Update Task" : "Create Task"}</CardTitle>
+          <div>
+            <CardTitle>{data?.id ? "Update Task" : "Create Task"}</CardTitle>
+            <DialogDescription className="text-[10px] mt-2 text-gray-500">
+              {` Fill out the form below to ${
+                data?.id ? "update the" : "create a new"
+              }  task.`}
+            </DialogDescription>
+          </div>
           {data?.id && (
             <Button
               onClick={handleDelete}
@@ -205,7 +216,7 @@ function AddEditTaskForm({
               value={form.title}
               onChange={handleChange}
               aria-invalid={!!titleError}
-              disabled={loading}
+              disabled={loading || isCompleted}
             />
             {titleError && (
               <span className="text-red-500 text-xs mt-1">{titleError}</span>
@@ -220,7 +231,7 @@ function AddEditTaskForm({
               placeholder="Enter description..."
               value={form.description}
               onChange={handleChange}
-              disabled={loading}
+              disabled={loading || isCompleted}
             />
           </div>
           <div>
@@ -228,6 +239,8 @@ function AddEditTaskForm({
             <DateTimePicker
               value={form.deadline}
               onChange={(d) => handleChange({ name: "deadline", value: d })}
+              disablePast={true}
+              disabled={loading || isCompleted}
             />
             {deadlineError && (
               <span className="text-red-500 text-xs mt-1">{deadlineError}</span>
@@ -241,12 +254,16 @@ function AddEditTaskForm({
               variant={"secondary"}
               type="button"
               onClick={handleDiscard}
-              disabled={loading}
+              disabled={loading || isCompleted}
             >
               Discard
             </Button>
           </DialogClose>
-          <Button className="flex-1" type="submit" disabled={loading}>
+          <Button
+            className="flex-1"
+            type="submit"
+            disabled={loading || isCompleted}
+          >
             {loading
               ? data?.id
                 ? "Updating..."

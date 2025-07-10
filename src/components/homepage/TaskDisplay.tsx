@@ -9,7 +9,12 @@ import {
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import AddEditTaskForm from "./AddEditTaskForm";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { type Task } from "../../types/task";
 import { useEffect, useState } from "react";
@@ -78,7 +83,7 @@ function TaskDisplay() {
     <>
       <div className="py-8">
         <div className="max-w-screen-lg mx-auto flex items-center justify-between">
-          <CardTitle className="text-3xl">My Tasks</CardTitle>
+          <CardTitle className="text-2xl md:text-3xl">My Tasks</CardTitle>
           <CardAction>
             <div className="flex items-center gap-3">
               <Select value={sortBy} onValueChange={setSortBy}>
@@ -101,6 +106,7 @@ function TaskDisplay() {
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
+                  <DialogTitle className="sr-only"></DialogTitle>
                   <AddEditTaskForm setOpen={setOpenDialog} />
                 </DialogContent>
               </Dialog>
@@ -110,7 +116,7 @@ function TaskDisplay() {
       </div>
       <Sheet open={openSheet} onOpenChange={setOpenSheet}>
         <SheetTrigger asChild>
-          <Button className="fixed bottom-6 left-1/2 transform -translate-x-1/2 sm:hidden">
+          <Button className="fixed bottom-6 left-1/2 transform -translate-x-1/2 sm:hidden z-50">
             <Plus className="h-4 w-4" />
             Create Task
           </Button>
