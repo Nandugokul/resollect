@@ -59,7 +59,7 @@ function TaskDisplayGrid({ tasks, loading = false }: TaskDisplayGridProps) {
           <>
             <div>
               <h2 className="text-xl mb-4 ">Ongoing</h2>
-              <div className="flex flex-col gap-4 max-h-[80vh] overflow-y-scroll hide-scrollbar">
+              <div className="flex flex-col gap-4 md:max-h-[80vh] md:overflow-y-scroll hide-scrollbar">
                 {loading
                   ? skeletons
                   : ongoing.map((task, idx) => (
@@ -69,7 +69,7 @@ function TaskDisplayGrid({ tasks, loading = false }: TaskDisplayGridProps) {
             </div>
             <div>
               <h2 className="text-xl mb-4 ">Success</h2>
-              <div className="flex flex-col gap-4 max-h-[80vh] overflow-y-scroll hide-scrollbar">
+              <div className="flex flex-col gap-4 md:max-h-[80vh] md:overflow-y-scroll hide-scrollbar">
                 {loading
                   ? skeletons
                   : success.map((task, idx) => (
@@ -79,7 +79,7 @@ function TaskDisplayGrid({ tasks, loading = false }: TaskDisplayGridProps) {
             </div>
             <div>
               <h2 className="text-xl mb-4 ">Failure</h2>
-              <div className="flex flex-col gap-4 max-h-[80vh] overflow-y-scroll hide-scrollbar">
+              <div className="flex flex-col gap-4 md:max-h-[80vh] md:overflow-y-scroll hide-scrollbar">
                 {loading
                   ? skeletons
                   : failure.map((task, idx) => (
@@ -102,8 +102,8 @@ function TaskDisplayGrid({ tasks, loading = false }: TaskDisplayGridProps) {
             </span>
           </div>
         ) : (
-          <Tabs defaultValue="ongoing" className="w-full ">
-            <TabsList className="w-full mb-4 py-6">
+          <Tabs defaultValue="ongoing" className="w-full">
+            <TabsList className="w-full mb-4 py-6 sticky top-0 z-10 bg-background">
               <TabsTrigger value="ongoing" className="flex-1 py-5">
                 Ongoing
               </TabsTrigger>
