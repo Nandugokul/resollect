@@ -15,6 +15,9 @@ import { toast } from "react-hot-toast";
 import { DialogClose } from "../ui/dialog";
 import { Trash } from "lucide-react";
 import type { Task } from "@/types/task";
+import { useDispatch } from "react-redux";
+import { addTask, updateTask } from "@/store/todoSlice";
+import { removeTask } from "@/store/todoSlice";
 
 function AddEditTaskForm({
   data,
@@ -30,6 +33,7 @@ function AddEditTaskForm({
   });
   const [submitted, setSubmitted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     if (data && data.id) {
@@ -46,24 +50,14 @@ function AddEditTaskForm({
     submitted && !form.deadline ? "Deadline is required" : "";
   const isFormValid = !!form.title && !!form.deadline;
 
-  const handleInputChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setForm((prev) => ({ ...prev, title: e.target.value }));
-      if (submitted) setSubmitted(false);
-    },
-    [submitted]
-  );
-
-  const handleDescriptionChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setForm((prev) => ({ ...prev, description: e.target.value }));
-    },
-    []
-  );
-
-  const handleDeadlineChange = React.useCallback(
-    (d: Date | undefined) => {
-      setForm((prev) => ({ ...prev, deadline: d }));
+  const handleChange = React.useCallback(
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        | { name: keyof typeof form; value: string | Date | undefined }
+    ) => {
+      const { name, value } = "target" in e ? e.target : e;
+      setForm((prev) => ({ ...prev, [name]: value }));
       if (submitted) setSubmitted(false);
     },
     [submitted]
@@ -76,28 +70,68 @@ function AddEditTaskForm({
       if (!isFormValid) return;
       setLoading(true);
       const now = new Date().toISOString();
-      const payload = {
-        title: form.title,
-        description: form.description,
-        deadline: form.deadline ? form.deadline.toISOString() : undefined,
-        ...(data?.id ? { updatedAt: now } : { createdAt: now }),
-      };
       let error: string | null = null;
+      let insertedTask = null;
+      let prevTask = null;
       if (data?.id) {
-        // Update existing task, do not include isCompleted
+        // Optimistically update the task in Redux
+        prevTask = { ...data };
+        const optimisticUpdate = {
+          ...data,
+          title: form.title,
+          description: form.description,
+          deadline: form.deadline ? form.deadline.toISOString() : "",
+          updatedAt: now,
+        };
+        dispatch(updateTask({ id: data.id, task: optimisticUpdate }));
+        setOpen?.(false);
         const res = await supabase
           .from("todoList")
-          .update(payload)
+          .update({
+            title: form.title,
+            description: form.description,
+            deadline: form.deadline ? form.deadline.toISOString() : undefined,
+            updatedAt: now,
+          })
           .eq("id", data.id)
           .single();
         error = res.error ? res.error.message : null;
+        if (error) {
+          // Revert optimistic update
+          dispatch(updateTask({ id: data.id, task: prevTask }));
+        }
       } else {
-        // Insert new task, include isCompleted: false
+        const tempId = `temp-${Date.now()}-${Math.random()}`;
+        const optimisticTask = {
+          id: tempId,
+          title: form.title,
+          description: form.description,
+          deadline: form.deadline ? form.deadline.toISOString() : "",
+          isCompleted: false,
+          createdAt: now,
+          updatedAt: null,
+        };
+        dispatch(addTask(optimisticTask));
+        setOpen?.(false);
         const res = await supabase
           .from("todoList")
-          .insert({ ...payload, isCompleted: false })
+          .insert({
+            title: form.title,
+            description: form.description,
+            deadline: form.deadline ? form.deadline.toISOString() : undefined,
+            isCompleted: false,
+            createdAt: now,
+          })
+          .select()
           .single();
         error = res.error ? res.error.message : null;
+        insertedTask = res.data;
+        if (!error && insertedTask) {
+          dispatch(updateTask({ id: tempId, task: insertedTask }));
+        }
+        if (error) {
+          dispatch(removeTask(tempId));
+        }
       }
       setLoading(false);
       if (error) {
@@ -113,9 +147,8 @@ function AddEditTaskForm({
       );
       setForm({ title: "", description: "", deadline: undefined });
       setSubmitted(false);
-      setOpen?.(false);
     },
-    [form, isFormValid, setOpen, data]
+    [form, isFormValid, setOpen, data, dispatch]
   );
 
   const handleDiscard = React.useCallback(() => {
@@ -161,9 +194,10 @@ function AddEditTaskForm({
           <div>
             <label className="block mb-1 text-sm font-medium">Task Name</label>
             <Input
+              name="title"
               placeholder="Enter task name..."
               value={form.title}
-              onChange={handleInputChange}
+              onChange={handleChange}
               aria-invalid={!!titleError}
               disabled={loading}
             />
@@ -176,9 +210,10 @@ function AddEditTaskForm({
               Description
             </label>
             <Textarea
+              name="description"
               placeholder="Enter description..."
               value={form.description}
-              onChange={handleDescriptionChange}
+              onChange={handleChange}
               disabled={loading}
             />
           </div>
@@ -186,7 +221,7 @@ function AddEditTaskForm({
             <label className="block mb-1 text-sm font-medium">Deadline</label>
             <DateTimePicker
               value={form.deadline}
-              onChange={handleDeadlineChange}
+              onChange={(d) => handleChange({ name: "deadline", value: d })}
             />
             {deadlineError && (
               <span className="text-red-500 text-xs mt-1">{deadlineError}</span>
@@ -205,17 +240,15 @@ function AddEditTaskForm({
               Discard
             </Button>
           </DialogClose>
-          <DialogClose asChild>
-            <Button className="flex-1" type="submit" disabled={loading}>
-              {loading
-                ? data?.id
-                  ? "Updating..."
-                  : "Adding..."
-                : data?.id
-                ? "Update Task"
-                : "Add Task"}
-            </Button>
-          </DialogClose>
+          <Button className="flex-1" type="submit" disabled={loading}>
+            {loading
+              ? data?.id
+                ? "Updating..."
+                : "Adding..."
+              : data?.id
+              ? "Update Task"
+              : "Add Task"}
+          </Button>
         </CardFooter>
       </form>
     </Card>

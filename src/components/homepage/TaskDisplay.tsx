@@ -16,6 +16,9 @@ import { useEffect, useState } from "react";
 import supabase from "@/lib/helper/supabaseClient";
 import { toast } from "react-hot-toast";
 import TaskDisplayGrid from "./TaskDisplayGrid";
+import { initiallySetTasks } from "@/store/todoSlice";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "@/store/store";
 
 const SORT_OPTIONS = [
   { value: "deadline-asc", label: "Due Date (Earliest)" },
@@ -48,18 +51,21 @@ function sortTasks(tasks: Task[], sortBy: string): Task[] {
 }
 
 function TaskDisplay() {
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [sortBy, setSortBy] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openSheet, setOpenSheet] = useState(false);
+  const dispatch = useDispatch();
+  const tasks = useSelector((state: RootState) => state.todoReducer);
 
   const fetchTasks = async () => {
     setLoading(true);
     const { data, error } = await supabase.from("todoList").select("*");
     if (error) {
       toast.error("Failed to fetch tasks. Please try again later.");
-      setTasks([]);
+      dispatch(initiallySetTasks([]));
     } else {
-      setTasks(data || []);
+      dispatch(initiallySetTasks(data || []));
     }
     setLoading(false);
   };
@@ -87,7 +93,7 @@ function TaskDisplay() {
                   ))}
                 </SelectContent>
               </Select>
-              <Dialog>
+              <Dialog open={openDialog} onOpenChange={setOpenDialog}>
                 <DialogTrigger asChild>
                   <Button className="hidden sm:flex">
                     <Plus className="h-4 w-4" />
@@ -95,14 +101,14 @@ function TaskDisplay() {
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
-                  <AddEditTaskForm />
+                  <AddEditTaskForm setOpen={setOpenDialog} />
                 </DialogContent>
               </Dialog>
             </div>
           </CardAction>
         </div>
       </div>
-      <Sheet>
+      <Sheet open={openSheet} onOpenChange={setOpenSheet}>
         <SheetTrigger asChild>
           <Button className="fixed bottom-6 left-1/2 transform -translate-x-1/2 sm:hidden">
             <Plus className="h-4 w-4" />
@@ -110,7 +116,7 @@ function TaskDisplay() {
           </Button>
         </SheetTrigger>
         <SheetContent side="bottom">
-          <AddEditTaskForm />
+          <AddEditTaskForm setOpen={setOpenSheet} />
         </SheetContent>
       </Sheet>
       <TaskDisplayGrid
