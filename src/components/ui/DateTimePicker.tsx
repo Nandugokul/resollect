@@ -119,14 +119,11 @@ export function DateTimePicker({
             selected={date}
             onSelect={handleDateSelect}
             initialFocus
-            {...(disablePast
-              ? {
-                  disabled: {
-                    before: new Date(new Date().setHours(0, 0, 0, 0)),
-                  },
-                }
-              : {})}
-            disabled={disabled}
+            disabled={
+              disablePast
+                ? [{ before: new Date(new Date().setHours(0, 0, 0, 0)) }]
+                : disabled
+            }
           />
           <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
             <ScrollArea className="w-64 sm:w-auto">
@@ -155,45 +152,51 @@ export function DateTimePicker({
             </ScrollArea>
             <ScrollArea className="w-64 sm:w-auto">
               <div className="flex sm:flex-col p-2">
-                {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => (
-                  <Button
-                    key={minute}
-                    size="icon"
-                    variant={
-                      date && date.getMinutes() === minute ? "default" : "ghost"
-                    }
-                    className="sm:w-full shrink-0 aspect-square"
-                    onClick={() =>
-                      handleTimeChange("minute", minute.toString())
-                    }
-                    disabled={disabled}
-                  >
-                    {minute}
-                  </Button>
-                ))}
+                {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => {
+                  return (
+                    <Button
+                      key={minute}
+                      size="icon"
+                      variant={
+                        date && date.getMinutes() === minute
+                          ? "default"
+                          : "ghost"
+                      }
+                      className="sm:w-full shrink-0 aspect-square"
+                      onClick={() =>
+                        handleTimeChange("minute", minute.toString())
+                      }
+                      disabled={disabled}
+                    >
+                      {minute}
+                    </Button>
+                  );
+                })}
               </div>
               <ScrollBar orientation="horizontal" className="sm:hidden" />
             </ScrollArea>
             <ScrollArea className="">
               <div className="flex sm:flex-col p-2">
-                {["AM", "PM"].map((ampm) => (
-                  <Button
-                    key={ampm}
-                    size="icon"
-                    variant={
-                      date &&
-                      ((ampm === "AM" && date.getHours() < 12) ||
-                        (ampm === "PM" && date.getHours() >= 12))
-                        ? "default"
-                        : "ghost"
-                    }
-                    className="sm:w-full shrink-0 aspect-square"
-                    onClick={() => handleTimeChange("ampm", ampm)}
-                    disabled={disabled}
-                  >
-                    {ampm}
-                  </Button>
-                ))}
+                {["AM", "PM"].map((ampm) => {
+                  return (
+                    <Button
+                      key={ampm}
+                      size="icon"
+                      variant={
+                        date &&
+                        ((ampm === "AM" && date.getHours() < 12) ||
+                          (ampm === "PM" && date.getHours() >= 12))
+                          ? "default"
+                          : "ghost"
+                      }
+                      className="sm:w-full shrink-0 aspect-square"
+                      onClick={() => handleTimeChange("ampm", ampm)}
+                      disabled={disabled}
+                    >
+                      {ampm}
+                    </Button>
+                  );
+                })}
               </div>
             </ScrollArea>
           </div>
