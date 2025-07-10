@@ -1,12 +1,12 @@
-# Resollect: Modern Task Manager
+# Zeno: Modern Task Manager
 
 ## Overview
-Resollect is a modern, full-stack, cloud-enabled task management app. It lets you create, update, and organize your tasks with a beautiful, responsive UI. Built with React, TypeScript, Vite, Redux Toolkit, and Supabase, it offers a seamless experience across devices, with real-time updates and a focus on productivity.
+Zeno is a modern, full-stack, cloud-enabled task management app. It lets you create, update, and organize your tasks with a beautiful, responsive UI. Built with React, TypeScript, Vite, Redux Toolkit, and Supabase, it offers a seamless experience across devices, with real-time updates and a focus on productivity.
 
 ## Technical Choices
-- **Frontend:** React 19, TypeScript, Vite for fast development, Tailwind CSS for styling, Radix UI for accessible components.
+- **Frontend:** React 19, TypeScript, Vite for fast development, Tailwind CSS for styling, Shadcn UI for accessible components.
 - **State Management:** Redux Toolkit for predictable, scalable state.
-- **Backend/Database:** Supabase (PostgreSQL + Auth + RESTful API) for cloud data storage and authentication.
+- **Backend/Database:** Supabase (PostgreSQL + Auth + RESTful API) for cloud data storage .
 - **Notifications:** react-hot-toast for instant feedback.
 - **UI/UX:** Modern, mobile-first, with dark/light mode and accessible components.
 
