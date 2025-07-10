@@ -6,7 +6,7 @@ Zeno is a modern, full-stack, cloud-enabled task management app. It lets you cre
 ## Technical Choices
 - **Frontend:** React 19, TypeScript, Vite for fast development, Tailwind CSS for styling, Shadcn UI for accessible components.
 - **State Management:** Redux Toolkit for predictable, scalable state.
-- **Backend/Database:** Supabase (PostgreSQL + Auth + RESTful API) for cloud data storage .
+- **Backend/Database:** Supabase (PostgreSQL + RESTful API) for cloud data storage .
 - **Notifications:** react-hot-toast for instant feedback.
 - **UI/UX:** Modern, mobile-first, with dark/light mode and accessible components.
 
