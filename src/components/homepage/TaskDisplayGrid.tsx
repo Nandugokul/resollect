@@ -103,8 +103,8 @@ function TaskDisplayGrid({ tasks, loading = false }: TaskDisplayGridProps) {
           </div>
         ) : (
           <Tabs defaultValue="ongoing" className="w-full">
-            <div className="p-3 sticky top-0 z-10 bg-gray-100 rounded-sm ">
-              <TabsList className="w-full py-6  bg-gray-100">
+            <div className="p-3 sticky top-0 z-10 bg-gray-100 dark:bg-[#23272f] border dark:border-input rounded-sm ">
+              <TabsList className="w-full py-6 bg-gray-100 dark:bg-[#23272f] ">
                 <TabsTrigger value="ongoing" className="flex-1 py-5 ">
                   Ongoing
                 </TabsTrigger>
