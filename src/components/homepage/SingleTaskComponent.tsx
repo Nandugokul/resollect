@@ -1,11 +1,16 @@
-import { Card, CardTitle } from "./ui/card";
-import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "./ui/dialog";
-import { Sheet, SheetTrigger, SheetContent } from "./ui/sheet";
+import { Card, CardTitle } from "../ui/card";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+} from "../ui/dialog";
+import { Sheet, SheetTrigger, SheetContent } from "../ui/sheet";
 import AddEditTaskForm from "./AddEditTaskForm";
 import React from "react";
 import type { Task } from "@/types/task";
-import { getDueParts } from "../lib/utils";
-import supabase from "@/utils/supabaseClient";
+import { getDueParts } from "../../lib/utils";
+import supabase from "@/lib/helper/supabaseClient";
 import { toast } from "react-hot-toast";
 
 function TaskCardContent({

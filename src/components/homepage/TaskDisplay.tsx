@@ -11,11 +11,11 @@ import { Plus } from "lucide-react";
 import AddEditTaskForm from "./AddEditTaskForm";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
-import TaskDisplayGrid from "./TaskDisplayGrid";
-import { type Task } from "../types/task";
+import { type Task } from "../../types/task";
 import { useEffect, useState } from "react";
-import supabase from "@/utils/supabaseClient";
+import supabase from "@/lib/helper/supabaseClient";
 import { toast } from "react-hot-toast";
+import TaskDisplayGrid from "./TaskDisplayGrid";
 
 const SORT_OPTIONS = [
   { value: "deadline-asc", label: "Due Date (Earliest)" },

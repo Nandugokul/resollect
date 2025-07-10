@@ -1,7 +1,7 @@
-import SingleTaskComponent from "./SingleTaskComponent";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import type { Task } from "../types/task";
-import { Skeleton } from "./ui/skeleton";
+import type { Task } from "@/types/task";
+import { Skeleton } from "../ui/skeleton";
+import SingleTaskComponent from "./SingleTaskComponent";
 
 interface TaskDisplayGridProps {
   tasks: Task[];

@@ -5,14 +5,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
-import { DateTimePicker } from "./DateTimePicker";
-import supabase from "@/utils/supabaseClient";
+} from "../ui/card";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
+import { DateTimePicker } from "../ui/DateTimePicker";
+import supabase from "@/lib/helper/supabaseClient";
 import { toast } from "react-hot-toast";
-import { DialogClose } from "./ui/dialog";
+import { DialogClose } from "../ui/dialog";
 import { Trash } from "lucide-react";
 import type { Task } from "@/types/task";
 
