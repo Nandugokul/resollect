@@ -1,69 +1,42 @@
-# React + TypeScript + Vite
+# Resollect: Modern Task Manager
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+Resollect is a modern, full-stack, cloud-enabled task management app. It lets you create, update, and organize your tasks with a beautiful, responsive UI. Built with React, TypeScript, Vite, Redux Toolkit, and Supabase, it offers a seamless experience across devices, with real-time updates and a focus on productivity.
 
-Currently, two official plugins are available:
+## Technical Choices
+- **Frontend:** React 19, TypeScript, Vite for fast development, Tailwind CSS for styling, Radix UI for accessible components.
+- **State Management:** Redux Toolkit for predictable, scalable state.
+- **Backend/Database:** Supabase (PostgreSQL + Auth + RESTful API) for cloud data storage and authentication.
+- **Notifications:** react-hot-toast for instant feedback.
+- **UI/UX:** Modern, mobile-first, with dark/light mode and accessible components.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Setup & Running Locally
+1. **Clone the repository:**
+   ```bash
+   git clone <repo-url>
+   cd resollect
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Set up environment variables:**
+   - Create a `.env` file in the root directory with the following:
+     ```env
+     VITE_SUPABASE_URL=your-supabase-url
+     VITE_SUPABASE_KEY=your-supabase-anon-key
+     ```
+   - You can find these in your [Supabase project dashboard](https://app.supabase.com/).
+4. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+5. **Open** [http://localhost:5173](http://localhost:5173) in your browser.
 
-## Expanding the ESLint configuration
+## Innovative Feature
+**Optimistic UI with Real-Time Feedback:**
+- When you add, update, or mark a task as done, the UI updates instantly—before the server confirms. If the server fails, changes are reverted and you get a toast notification. This makes the app feel fast and reliable, even on slow networks.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Feel free to contribute or suggest features by opening an issue or pull request!
