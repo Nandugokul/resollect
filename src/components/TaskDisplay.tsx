@@ -17,10 +17,43 @@ import { useEffect, useState } from "react";
 import supabase from "@/utils/supabaseClient";
 import { toast } from "react-hot-toast";
 
+const SORT_OPTIONS = [
+  { value: "deadline-asc", label: "Due Date (Earliest)" },
+  { value: "deadline-desc", label: "Due Date (Latest)" },
+  { value: "title-asc", label: "(A-Z)" },
+  { value: "title-desc", label: "(Z-A)" },
+  { value: "none", label: "None" },
+];
+
+function sortTasks(tasks: Task[], sortBy: string): Task[] {
+  switch (sortBy) {
+    case "title-asc":
+      return [...tasks].sort((a, b) => a.title.localeCompare(b.title));
+    case "title-desc":
+      return [...tasks].sort((a, b) => b.title.localeCompare(a.title));
+    case "deadline-asc":
+      return [...tasks].sort(
+        (a, b) =>
+          new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+      );
+    case "deadline-desc":
+      return [...tasks].sort(
+        (a, b) =>
+          new Date(b.deadline).getTime() - new Date(a.deadline).getTime()
+      );
+    case "none":
+    default:
+      return tasks;
+  }
+}
+
 function TaskDisplay() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [sortBy, setSortBy] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
 
   const fetchTasks = async () => {
+    setLoading(true);
     const { data, error } = await supabase.from("todoList").select("*");
     if (error) {
       toast.error("Failed to fetch tasks. Please try again later.");
@@ -28,6 +61,7 @@ function TaskDisplay() {
     } else {
       setTasks(data || []);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -41,15 +75,16 @@ function TaskDisplay() {
           <CardTitle className="text-3xl">My Tasks</CardTitle>
           <CardAction>
             <div className="flex items-center gap-3">
-              <Select>
-                <SelectTrigger className="w-[140px]">
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="date">Date</SelectItem>
-                  <SelectItem value="priority">Priority</SelectItem>
-                  <SelectItem value="name">Name</SelectItem>
-                  <SelectItem value="status">Status</SelectItem>
+                  {SORT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <Dialog>
@@ -78,7 +113,10 @@ function TaskDisplay() {
           <AddEditTaskForm />
         </SheetContent>
       </Sheet>
-      <TaskDisplayGrid tasks={tasks} />
+      <TaskDisplayGrid
+        tasks={!sortBy || sortBy === "none" ? tasks : sortTasks(tasks, sortBy)}
+        loading={loading}
+      />
     </>
   );
 }

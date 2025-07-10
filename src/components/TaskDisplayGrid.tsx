@@ -1,12 +1,14 @@
 import SingleTaskComponent from "./SingleTaskComponent";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import type { Task } from "../types/task";
+import { Skeleton } from "./ui/skeleton";
 
 interface TaskDisplayGridProps {
   tasks: Task[];
+  loading?: boolean;
 }
 
-function TaskDisplayGrid({ tasks }: TaskDisplayGridProps) {
+function TaskDisplayGrid({ tasks, loading = false }: TaskDisplayGridProps) {
   const ongoing: Task[] = [];
   const success: Task[] = [];
   const failure: Task[] = [];
@@ -23,66 +25,95 @@ function TaskDisplayGrid({ tasks }: TaskDisplayGridProps) {
     }
   });
 
+  const skeletonCount = 3;
+  const skeletons = Array.from({ length: skeletonCount }, (_, i) => (
+    <div
+      key={i}
+      className="p-3 gap-4 rounded-lg border bg-card text-card-foreground shadow-sm flex flex-col mb-4"
+      style={{ minHeight: 96 }}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <Skeleton className="h-5 w-1/3 rounded" />
+        <Skeleton className="h-4 w-16 rounded" />
+      </div>
+      <Skeleton className="h-4 w-2/3 mb-1 rounded" />
+      <Skeleton className="h-4 w-1/2 rounded" />
+      <Skeleton className="h-8 w-full mt-3 rounded" />
+    </div>
+  ));
+
   return (
     <>
       <div className="hidden md:grid grid-cols-3 gap-6 w-full">
         <div>
           <h2 className="text-xl font-bold mb-4 ">Ongoing</h2>
           <div className="flex flex-col gap-4">
-            {ongoing.map((task, idx) => (
-              <SingleTaskComponent key={task.id || idx} data={task} />
-            ))}
+            {loading
+              ? skeletons
+              : ongoing.map((task, idx) => (
+                  <SingleTaskComponent key={task.id || idx} data={task} />
+                ))}
           </div>
         </div>
         <div>
           <h2 className="text-xl font-bold mb-4 ">Success</h2>
           <div className="flex flex-col gap-4">
-            {success.map((task, idx) => (
-              <SingleTaskComponent key={task.id || idx} data={task} />
-            ))}
+            {loading
+              ? skeletons
+              : success.map((task, idx) => (
+                  <SingleTaskComponent key={task.id || idx} data={task} />
+                ))}
           </div>
         </div>
         <div>
           <h2 className="text-xl font-bold mb-4 ">Failure</h2>
           <div className="flex flex-col gap-4">
-            {failure.map((task, idx) => (
-              <SingleTaskComponent key={task.id || idx} data={task} />
-            ))}
+            {loading
+              ? skeletons
+              : failure.map((task, idx) => (
+                  <SingleTaskComponent key={task.id || idx} data={task} />
+                ))}
           </div>
         </div>
       </div>
-      <div className="md:hidden w-full">
-        <Tabs defaultValue="ongoing" className="w-full">
-          <TabsList className="w-full mb-4">
-            <TabsTrigger value="ongoing" className="flex-1">
+      <div className="md:hidden w-full ">
+        <Tabs defaultValue="ongoing" className="w-full ">
+          <TabsList className="w-full mb-4 py-6">
+            <TabsTrigger value="ongoing" className="flex-1 py-5">
               Ongoing
             </TabsTrigger>
-            <TabsTrigger value="success" className="flex-1">
+            <TabsTrigger value="success" className="flex-1 py-5">
               Success
             </TabsTrigger>
-            <TabsTrigger value="failure" className="flex-1">
+            <TabsTrigger value="failure" className="flex-1 py-5">
               Failure
             </TabsTrigger>
           </TabsList>
           <TabsContent value="ongoing">
             <div className="flex flex-col gap-4">
-              {ongoing.map((task, idx) => (
-                <SingleTaskComponent key={task.id || idx} data={task} />
-              ))}
+              {loading
+                ? skeletons
+                : ongoing.map((task, idx) => (
+                    <SingleTaskComponent key={task.id || idx} data={task} />
+                  ))}
             </div>
           </TabsContent>
           <TabsContent value="success">
             <div className="flex flex-col gap-4">
-              {success.map((task, idx) => (
-                <SingleTaskComponent key={task.id || idx} data={task} />
-              ))}
+              {loading
+                ? skeletons
+                : success.map((task, idx) => (
+                    <SingleTaskComponent key={task.id || idx} data={task} />
+                  ))}
             </div>
           </TabsContent>
           <TabsContent value="failure">
             <div className="flex flex-col gap-4">
-              {failure.map((task, idx) => (
-                <SingleTaskComponent key={task.id || idx} data={task} />
-              ))}
+              {loading
+                ? skeletons
+                : failure.map((task, idx) => (
+                    <SingleTaskComponent key={task.id || idx} data={task} />
+                  ))}
             </div>
           </TabsContent>
         </Tabs>
