@@ -33,8 +33,10 @@ function TaskCardContent({
         role="button"
         tabIndex={0}
       >
-        <div className="flex items-center justify-between">
-          <CardTitle>{data?.title}</CardTitle>
+        <div className="flex items-center justify-between gap-4">
+          <CardTitle className="max-w-[80%] overflow-hidden">
+            {data?.title}
+          </CardTitle>
           <div className="font-light text-[14px]">
             {data.isCompleted ? (
               <span className="text-green-500">Completed</span>

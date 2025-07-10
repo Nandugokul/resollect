@@ -171,7 +171,6 @@ function AddEditTaskForm({
       .delete()
       .eq("id", data?.id);
     if (error) {
-      // Revert optimistic delete
       dispatch(addTask(prevTask));
       toast.error("Failed to remove task : " + error.message);
     } else {
@@ -180,8 +179,8 @@ function AddEditTaskForm({
   };
 
   return (
-    <Card className="border-0 shadow-none">
-      <CardHeader>
+    <Card className="border-0 shadow-none py-4">
+      <CardHeader className="mt-6">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>{data?.id ? "Update Task" : "Create Task"}</CardTitle>

@@ -1,12 +1,13 @@
 import { Toaster } from "react-hot-toast";
 import Todo from "./components/homepage/Todo";
+import { ThemeProvider } from "@/components/theme-provider";
 
 function App() {
   return (
-    <div>
+    <ThemeProvider>
       <Todo />
       <Toaster position="bottom-center" />
-    </div>
+    </ThemeProvider>
   );
 }
 
