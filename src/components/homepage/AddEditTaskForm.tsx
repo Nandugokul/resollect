@@ -183,7 +183,9 @@ function AddEditTaskForm({
       <CardHeader className="mt-6">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>{data?.id ? "Update Task" : "Create Task"}</CardTitle>
+            <CardTitle className="text-xl">
+              {data?.id ? "Update Task" : "Create Task"}
+            </CardTitle>
             <DialogDescription className="text-[10px] mt-2 text-gray-500">
               {` Fill out the form below to ${
                 data?.id ? "update the" : "create a new"
@@ -195,7 +197,7 @@ function AddEditTaskForm({
               onClick={handleDelete}
               type="button"
               variant="ghost"
-              size="icon"
+              size="lg"
               className="ml-2"
               disabled={loading}
               aria-label="Delete"
@@ -249,6 +251,7 @@ function AddEditTaskForm({
         <CardFooter className="flex items-center justify-between gap-4 mt-5">
           <DialogClose asChild>
             <Button
+              size="lg"
               className="flex-1"
               variant={"secondary"}
               type="button"
@@ -260,6 +263,7 @@ function AddEditTaskForm({
           </DialogClose>
           <Button
             className="flex-1"
+            size="lg"
             type="submit"
             disabled={loading || isCompleted}
           >

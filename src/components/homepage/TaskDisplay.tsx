@@ -116,7 +116,10 @@ function TaskDisplay() {
       </div>
       <Sheet open={openSheet} onOpenChange={setOpenSheet}>
         <SheetTrigger asChild>
-          <Button className="fixed bottom-6 left-1/2 transform -translate-x-1/2 sm:hidden z-50">
+          <Button
+            size="lg"
+            className="fixed bottom-6 left-1/2 transform -translate-x-1/2 sm:hidden z-50"
+          >
             <Plus className="h-4 w-4" />
             Create Task
           </Button>
