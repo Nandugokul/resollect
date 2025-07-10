@@ -54,7 +54,9 @@ function TaskCardContent({
             )}
           </div>
         </div>
-        <div className="text-[14px] text-gray-500">{data?.description}</div>
+        {data?.description && (
+          <div className="text-[14px] text-gray-500">{data?.description}</div>
+        )}
       </div>
       {!data.isCompleted && (
         <button
